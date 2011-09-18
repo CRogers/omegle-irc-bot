@@ -1,11 +1,16 @@
-var Omegle, om, start;
+var Omegle, lastSaid, om, start, time, waiter;
 Omegle = require('omegle').Omegle;
+time = function() {
+  return new Date().getTime();
+};
+lastSaid = time();
 om = new Omegle();
 om.on('recaptchaRequired', function(key) {
   return console.log("Recaptcha Required: " + key);
 });
 om.on('gotMessage', function(msg) {
   var repeat;
+  lastSaid = time();
   console.log("Got message: " + msg);
   repeat = function() {
     var sent;
@@ -28,8 +33,19 @@ om.on('stoppedTyping', function() {
   return console.log('Stranger stopped typing');
 });
 start = function() {
+  om.disconnect(function() {
+    return console.log("disconnected\n");
+  });
   return om.start(function() {
-    return console.log("connected with id " + om.id);
+    console.log("connected with id " + om.id);
+    return lastSaid = time();
   });
 };
 start();
+waiter = function() {
+  if (time() - lastSaid > 20 * 1000) {
+    console.log("Stranger timed out");
+    return start();
+  }
+};
+setInterval(waiter, 200);
