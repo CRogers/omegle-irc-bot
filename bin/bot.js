@@ -8,18 +8,39 @@ OmegleIrc = (function() {
     this.nick = nick;
     this.channel = channel;
     this.active = false;
-    this.client = new irc.Client(this.host, this.nick, [this.channel]);
+    this.client = new irc.Client(this.host, this.nick);
     this.client.on('message', __bind(function(from, to, message) {
       console.log("From " + from + " to " + to + " => " + message);
       if (message[0] === '>') {
         return this.command(message.slice(1));
       }
     }, this));
-    this.client.join(this.channel);
+    this.client.on('error', function(err) {
+      console.log("Error:");
+      return console.log(err);
+    });
+    this.client.join(this.channel, function() {
+      return this.command('!help');
+    });
     this.omegle = new Omegle();
+    this.omegle.on('recaptchaRequired', __bind(function(id) {
+      return this.say("Please solve recaptcha with id: " + id + " on the host machine!");
+    }, this));
+    this.omegle.on('gotMessage', __bind(function(msg) {
+      console.log("Message " + msg);
+      return this.say(msg);
+    }, this));
+    this.omegle.on('typing', __bind(function() {
+      return console.log("Typing");
+    }, this));
+    this.omegle.on('strangerDisconnected', __bind(function() {
+      this.say('Stranger Disconnected');
+      return this.command('!next');
+    }, this));
   }
   OmegleIrc.prototype.command = function(msg) {
     var start;
+    console.log("command: " + msg + ", active: " + this.active);
     start = __bind(function() {
       return this.omegle.start(__bind(function() {
         this.active = true;
@@ -38,21 +59,28 @@ OmegleIrc = (function() {
         if (!this.active) {
           return this.say('<Not Started!>');
         } else {
-          return omegle.disconnect(function() {
-            return this.active = false;
-          });
+          return this.omegle.disconnect(__bind(function() {
+            this.active = false;
+            return this.say('Stopped');
+          }, this));
         }
         break;
       case '!next':
         this.say('Target disconnected');
-        return omegle.disconnect(function() {
+        return this.omegle.disconnect(function() {
           return start();
         });
       case '!help':
-        return this.say('Avaliable commands: >!start, >!stop, >!next, >[msg]');
+        return this.say('Avaliable commands: >!about, >!start, >!stop, >!next, >[msg]');
+      case '!about':
+        this.say('I am an Omegle IRC bot. To start a conversation type  >!start');
+        this.say('To say something type  >[msg]  where [msg] is the message');
+        return this.say('I was created by Callum Rogers in 2011');
       default:
         if (this.active) {
-          return omegle.send(msg);
+          return this.omegle.send(msg, function(err) {
+            return console.log("Send error: " + err);
+          });
         }
     }
   };
@@ -61,4 +89,4 @@ OmegleIrc = (function() {
   };
   return OmegleIrc;
 })();
-oirc = new OmegleIrc('irc.freenode.net', 'Strangerest', ['##calpol']);
+oirc = new OmegleIrc('<host>', '<nick>', '<channel>');
