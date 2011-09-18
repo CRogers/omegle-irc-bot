@@ -19,9 +19,9 @@ OmegleIrc = (function() {
       console.log("Error:");
       return console.log(err);
     });
-    this.client.join(this.channel, function() {
+    this.client.join(this.channel, __bind(function() {
       return this.command('!help');
-    });
+    }, this));
     this.omegle = new Omegle();
     this.omegle.on('recaptchaRequired', __bind(function(id) {
       return this.say("Please solve recaptcha with id: " + id + " on the host machine!");

@@ -17,7 +17,7 @@ class OmegleIrc
 			console.log "Error:"
 			console.log err
 		
-		@client.join @channel, ->
+		@client.join @channel, =>
 			@command '!help'
 		
 		@omegle = new Omegle()
