@@ -1,4 +1,4 @@
-var Omegle, om;
+var Omegle, om, start;
 Omegle = require('omegle').Omegle;
 om = new Omegle();
 om.on('recaptchaRequired', function(key) {
@@ -16,10 +16,17 @@ om.on('gotMessage', function(msg) {
 });
 om.on('strangerDisconnected', function() {
   console.log("Stranger disconnected");
-  return setTimeout((function() {
-    return om.start;
-  }), 1000);
+  return start();
 });
-om.start(function() {
-  return console.log("connected with id " + om.id);
+om.on('typing', function() {
+  return console.log('Stranger started typing');
 });
+om.on('stoppedTyping', function() {
+  return console.log('Stranger stopped typing');
+});
+start = function() {
+  return om.start(function() {
+    return console.log("connected with id " + om.id);
+  });
+};
+start();

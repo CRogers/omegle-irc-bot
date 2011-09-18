@@ -16,6 +16,14 @@ om.on 'gotMessage', (msg) ->
 
 om.on 'strangerDisconnected', ->
 	console.log "Stranger disconnected"
-	setTimeout (-> om.start), 1000
+	start()
 
-om.start -> console.log "connected with id #{om.id}"
+om.on 'typing', -> console.log 'Stranger started typing'
+om.on 'stoppedTyping', -> console.log 'Stranger stopped typing'
+
+start = ->
+	om.start -> 
+		console.log "connected with id #{om.id}"
+		
+
+start()
