@@ -1,51 +1,64 @@
-var Omegle, lastSaid, om, start, time, waiter;
+var Omegle, OmegleIrc, irc, oirc;
+var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 Omegle = require('omegle').Omegle;
-time = function() {
-  return new Date().getTime();
-};
-lastSaid = time();
-om = new Omegle();
-om.on('recaptchaRequired', function(key) {
-  return console.log("Recaptcha Required: " + key);
-});
-om.on('gotMessage', function(msg) {
-  var repeat;
-  lastSaid = time();
-  console.log("Got message: " + msg);
-  repeat = function() {
-    var sent;
-    sent = "You said: " + msg;
-    return om.send(sent, function(err) {
-      return console.log(!err ? "Message sent: " + sent : "Error: " + err);
-    });
-  };
-  om.startTyping;
-  return setTimeout(repeat, 800);
-});
-om.on('strangerDisconnected', function() {
-  console.log("Stranger disconnected");
-  return start();
-});
-om.on('typing', function() {
-  return console.log('Stranger started typing');
-});
-om.on('stoppedTyping', function() {
-  return console.log('Stranger stopped typing');
-});
-start = function() {
-  om.disconnect(function() {
-    return console.log("disconnected\n");
-  });
-  return om.start(function() {
-    console.log("connected with id " + om.id);
-    return lastSaid = time();
-  });
-};
-start();
-waiter = function() {
-  if (time() - lastSaid > 20 * 1000) {
-    console.log("Stranger timed out");
-    return start();
+irc = require('irc');
+OmegleIrc = (function() {
+  function OmegleIrc(host, nick, channel) {
+    this.host = host;
+    this.nick = nick;
+    this.channel = channel;
+    this.active = false;
+    this.client = new irc.Client(this.host, this.nick, [this.channel]);
+    this.client.on('message', __bind(function(from, to, message) {
+      console.log("From " + from + " to " + to + " => " + message);
+      if (message[0] === '>') {
+        return this.command(message.slice(1));
+      }
+    }, this));
+    this.client.join(this.channel);
+    this.omegle = new Omegle();
   }
-};
-setInterval(waiter, 200);
+  OmegleIrc.prototype.command = function(msg) {
+    var start;
+    start = __bind(function() {
+      return this.omegle.start(__bind(function() {
+        this.active = true;
+        return this.say("Target Aquired (id: " + this.omegle.id + ")");
+      }, this));
+    }, this);
+    switch (msg) {
+      case '!start':
+        if (this.active) {
+          return this.say('<Already Started!>');
+        } else {
+          return start();
+        }
+        break;
+      case '!stop':
+        if (!this.active) {
+          return this.say('<Not Started!>');
+        } else {
+          return omegle.disconnect(function() {
+            return this.active = false;
+          });
+        }
+        break;
+      case '!next':
+        this.say('Target disconnected');
+        return omegle.disconnect(function() {
+          return start();
+        });
+      case '!help':
+        return this.say('Avaliable commands: >!start, >!stop, >!next, >[msg]');
+      default:
+        if (this.active) {
+          return omegle.send(msg);
+        }
+    }
+  };
+  OmegleIrc.prototype.say = function(msg) {
+    return this.client.say(this.channel, msg);
+  };
+  return OmegleIrc;
+})();
+oirc = new OmegleIrc('irc.freenode.net', 'Strangerest', ['##calpol']);
