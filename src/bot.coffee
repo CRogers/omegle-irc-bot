@@ -3,16 +3,18 @@ Omegle = require('omegle').Omegle
 om = new Omegle()
 
 om.on 'recaptchaRequired', (key) ->
-	console.log key
+	console.log "Recaptcha Required: #{key}"
 	
 om.on 'gotMessage', (msg) ->
 	console.log "Got message: #{msg}"
 	
-	repeat = -> 
-		om.send "You said: #{msg}", (err) ->
-			console.log "Message Sent (Error: #{err})"
+	repeat = ->
+		sent = "You said: #{msg}" 
+		om.send sent, (err) ->
+			console.log if !err then "Message sent: #{sent}" else "Error: #{err}"
 	
-	setTimeout repeat, 500
+	om.startTyping
+	setTimeout repeat, 800
 
 om.on 'strangerDisconnected', ->
 	console.log "Stranger disconnected"

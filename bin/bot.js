@@ -2,17 +2,20 @@ var Omegle, om, start;
 Omegle = require('omegle').Omegle;
 om = new Omegle();
 om.on('recaptchaRequired', function(key) {
-  return console.log(key);
+  return console.log("Recaptcha Required: " + key);
 });
 om.on('gotMessage', function(msg) {
   var repeat;
   console.log("Got message: " + msg);
   repeat = function() {
-    return om.send("You said: " + msg, function(err) {
-      return console.log("Message Sent (Error: " + err + ")");
+    var sent;
+    sent = "You said: " + msg;
+    return om.send(sent, function(err) {
+      return console.log(!err ? "Message sent: " + sent : "Error: " + err);
     });
   };
-  return setTimeout(repeat, 500);
+  om.startTyping;
+  return setTimeout(repeat, 800);
 });
 om.on('strangerDisconnected', function() {
   console.log("Stranger disconnected");
