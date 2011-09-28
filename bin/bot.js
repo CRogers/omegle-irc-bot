@@ -91,7 +91,8 @@ OmegleIrc = (function() {
         if (msg === command) {
           this.say('Available commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style');
         }
-        switch (msg.slice(6)) {
+        arg = msg.slice(6).toLowerCase();
+        switch (arg) {
           case 'color':
           case '!color':
           case '>!color':
@@ -100,6 +101,8 @@ OmegleIrc = (function() {
           case '!style':
           case '>!style':
             return this.say("Available styles: " + styles);
+          default:
+            return this.say("<" + arg + " does not have a help page>");
         }
         break;
       case '!color':
