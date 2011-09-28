@@ -89,20 +89,21 @@ OmegleIrc = (function() {
         });
       case '!help':
         if (msg === command) {
-          this.say('Available commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style');
-        }
-        arg = msg.slice(6).toLowerCase();
-        switch (arg) {
-          case 'color':
-          case '!color':
-          case '>!color':
-            return this.say("Available colours: " + colors);
-          case 'style':
-          case '!style':
-          case '>!style':
-            return this.say("Available styles: " + styles);
-          default:
-            return this.say("<" + arg + " does not have a help page>");
+          return this.say('Available commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style');
+        } else {
+          arg = msg.slice(6).toLowerCase();
+          switch (arg) {
+            case 'color':
+            case '!color':
+            case '>!color':
+              return this.say("Available colours: " + colors);
+            case 'style':
+            case '!style':
+            case '>!style':
+              return this.say("Available styles: " + styles);
+            default:
+              return this.say("<" + arg + " does not have a help page>");
+          }
         }
         break;
       case '!color':

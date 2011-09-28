@@ -83,17 +83,18 @@ class OmegleIrc
 				if msg is command
 					@say 'Available commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style'
 				
-				arg = msg[6..].toLowerCase()
+				else				
+					arg = msg[6..].toLowerCase()
 				
-				switch arg
-					when 'color', '!color', '>!color'
-						@say "Available colours: #{colors}"
+					switch arg
+						when 'color', '!color', '>!color'
+							@say "Available colours: #{colors}"
 					
-					when 'style', '!style', '>!style'
-						@say "Available styles: #{styles}"
+						when 'style', '!style', '>!style'
+							@say "Available styles: #{styles}"
 						
-					else
-						@say "<#{arg} does not have a help page>"
+						else
+							@say "<#{arg} does not have a help page>"
 			
 			when '!color'
 				arg = msg[7..]
