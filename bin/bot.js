@@ -58,7 +58,7 @@ OmegleIrc = (function() {
     start = __bind(function() {
       return this.omegle.start(__bind(function() {
         this.active = true;
-        return this.say("Target Aquired (id: " + this.omegle.id + ")");
+        return this.say("Target Acquired (id: " + this.omegle.id + ")");
       }, this));
     }, this);
     command = msg.match(/\S+/)[0];

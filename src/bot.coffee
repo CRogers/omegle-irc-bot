@@ -55,7 +55,7 @@ class OmegleIrc
 		start = =>
 			@omegle.start =>
 				@active = true
-				@say "Target Aquired (id: #{@omegle.id})"
+				@say "Target Acquired (id: #{@omegle.id})"
 	
 		command = msg.match(/\S+/)[0]
 		
