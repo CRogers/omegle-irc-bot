@@ -89,17 +89,17 @@ OmegleIrc = (function() {
         });
       case '!help':
         if (msg === command) {
-          this.say('Avaliable commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style');
+          this.say('Available commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style');
         }
         switch (msg.slice(6)) {
           case 'color':
           case '!color':
           case '>!color':
-            return this.say("Avaliable colours: " + colors);
+            return this.say("Available colours: " + colors);
           case 'style':
           case '!style':
           case '>!style':
-            return this.say("Avaliable styles: " + styles);
+            return this.say("Available styles: " + styles);
         }
         break;
       case '!color':
