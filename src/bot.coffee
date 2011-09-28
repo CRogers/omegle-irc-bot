@@ -1,11 +1,24 @@
 Omegle = require('omegle').Omegle
 irc = require 'irc'
+c = require 'irc-colors'
 
+colors = ['teal', 'bluecyan', 'cyan', 'aqua', 'blue', 'royal', 'pink', 'lightpurple', 'fuchsia', 'gray', 'grey', 'lightgray', 'lightgrey', 'silver', 'white', 'black', 'navy', 'green', 'red', 'brown', 'rainbow']
+
+styles = ['normal', 'bold', 'underline', 'italic']
+
+inArray = (arr, a) ->
+	for item in arr
+		if item is a
+			return true
+	
+	return false
 
 class OmegleIrc
 
 	constructor: (@host, @nick, @channel) ->
 		@active = false
+		@color = 'teal'
+		@style = 'bold'
 		
 		@client = new irc.Client(@host, @nick)
 		@client.on 'message', (from, to, message) =>
@@ -33,7 +46,6 @@ class OmegleIrc
 			console.log "Typing"
 			
 		@omegle.on 'strangerDisconnected', =>
-			@say 'Stranger Disconnected'
 			@command '!next'
 		
 	command: (msg) ->
@@ -45,7 +57,9 @@ class OmegleIrc
 				@active = true
 				@say "Target Aquired (id: #{@omegle.id})"
 	
-		switch msg
+		command = msg.match(/\S+/)[0]
+		
+		switch command
 			when '!start'
 				if @active
 					@say '<Already Started!>'
@@ -65,7 +79,31 @@ class OmegleIrc
 				@omegle.disconnect -> start()
 			
 			when '!help'
-				@say 'Avaliable commands: >!about, >!start, >!stop, >!next, >[msg]'	
+				if msg is command
+					@say 'Avaliable commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style'
+				
+				switch msg[6..]
+					when 'color'
+						@say "Avaliable colours: #{colors}"
+					
+					when 'style'
+						@say "Avaliable styles: #{styles}"
+			
+			when '!color'
+				arg = msg[7..]
+				if inArray colors, arg
+					@color = arg
+					@say "<Color is now #{arg}>"
+				else
+					@say "<#{arg} is not a color!>"
+			
+			when '!style'
+				arg = msg[7..]
+				if inArray styles, arg
+					@style = arg
+					@say "<Style is now #{arg}>"
+				else
+					@say "<#{arg} is not a style!>"
 				
 			when '!about'
 				@say 'I am an Omegle IRC bot. To start a conversation type  >!start'
@@ -77,7 +115,6 @@ class OmegleIrc
 					@omegle.send msg, (err) -> console.log "Send error: #{err}"
 	
 	say: (msg) ->
-		@client.say @channel, msg
-				
+		@client.say @channel, if @style is 'normal' then c[@color](msg) else c[@style][@color](msg)
 
-oirc = new OmegleIrc '<host>', '<nick>', '<channel>'
+oirc = new OmegleIrc process.argv[2], process.argv[3], process.argv[4]
