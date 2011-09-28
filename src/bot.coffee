@@ -83,10 +83,10 @@ class OmegleIrc
 					@say 'Avaliable commands: >!help, >!about, >!start, >!stop, >!next, >[msg], >!color, >!style'
 				
 				switch msg[6..]
-					when 'color'
+					when 'color', '!color', '>!color'
 						@say "Avaliable colours: #{colors}"
 					
-					when 'style'
+					when 'style', '!style', '>!style'
 						@say "Avaliable styles: #{styles}"
 			
 			when '!color'

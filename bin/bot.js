@@ -91,8 +91,12 @@ OmegleIrc = (function() {
         }
         switch (msg.slice(6)) {
           case 'color':
+          case '!color':
+          case '>!color':
             return this.say("Avaliable colours: " + colors);
           case 'style':
+          case '!style':
+          case '>!style':
             return this.say("Avaliable styles: " + styles);
         }
         break;
