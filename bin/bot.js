@@ -26,8 +26,10 @@ OmegleIrc = (function() {
     this.client = new irc.Client(this.host, this.nick);
     this.client.on('message', __bind(function(from, to, message) {
       console.log("From " + from + " to " + to + " => " + message);
-      if (message[0] === '>') {
-        return this.command(message.slice(1));
+      if (to === this.channel) {
+        if (message[0] === '>') {
+          return this.command(message.slice(1));
+        }
       }
     }, this));
     this.client.on('error', function(err) {

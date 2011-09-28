@@ -23,8 +23,9 @@ class OmegleIrc
 		@client = new irc.Client(@host, @nick)
 		@client.on 'message', (from, to, message) =>
 			console.log "From #{from} to #{to} => #{message}"
-			if message[0] is '>'
-				@command message[1..]
+			if to is @channel
+				if message[0] is '>'
+					@command message[1..]
 		
 		@client.on 'error', (err) ->
 			console.log "Error:"
